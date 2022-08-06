@@ -1,5 +1,7 @@
 from bluez_peripheral.agent import BaseAgent, AgentCapability
+import dbus_next
 from dbus_next.service import method
+from dbus_next.errors import DBusError
 
 class MyAgent(BaseAgent):
     def __init__(self, capability: AgentCapability = AgentCapability.NO_INPUT_NO_OUTPUT):
