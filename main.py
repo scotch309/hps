@@ -14,7 +14,7 @@ async def main():
     agent = MyAgent()
     await agent.register(bus)
     adapter = await Adapter.get_first(bus)
-    advert = Advertisement(localName='hps', serviceUUIDs=[service.service_uuid], appearance=0, timeout=60)
+    advert = Advertisement(localName='hps', serviceUUIDs=[service.service_uuid], appearance=0, timeout=6000)
     await advert.register(bus, adapter)
     while True:
         await asyncio.sleep(5)

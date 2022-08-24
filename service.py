@@ -68,7 +68,7 @@ class HPS(Service):
     def Headers_read(self, options):
         res = str(self.webclient.res['headers']) if self.webclient.res['headers'] is not None else ''
         return bytes(res, 'utf-8')
-    @characteristic('2AB7', CharFlags.WRITE)
+    @characteristic('2AB7', WRITE_PROPERTY)
     def Headers_write(self, options):
         pass
     @Headers_write.setter
@@ -80,7 +80,7 @@ class HPS(Service):
     def Entity_Body_read(self, options):
         res = str(self.webclient.res['body']) if self.webclient.res['body'] is not None else ''
         return bytes(res, 'utf-8')
-    @characteristic('2AB9', CharFlags.WRITE)
+    @characteristic('2AB9', WRITE_PROPERTY)
     def Entity_Body_write(self, options):
         pass
     @Entity_Body_write.setter
@@ -88,7 +88,7 @@ class HPS(Service):
         self.webclient.req['body'] = value.decode()
         print(self.webclient.req['body'])
 
-    @characteristic('2ABC', CharFlags.WRITE)
+    @characteristic('2ABA', WRITE_PROPERTY)
     def Control_Point_write(self, options):
         pass
     @Control_Point_write.setter
