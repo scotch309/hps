@@ -5,16 +5,20 @@ from bluez_peripheral.advert import Advertisement
 import asyncio, subprocess
 from bluez_peripheral.gatt.service import Service
 from agent import MyAgent
-from service import HPS
+from service import HPS, CertService
 
 async def main():
     bus = await get_message_bus()
+
     service = HPS()
-    await service.register(bus)
+    service2 = CertService()
+    await service.register(bus,path='/com/spacecheese/bluez_peripheral')
+    await service2.register(bus, path='/com/spacecheese/bluez_peripheral0')
+
     agent = MyAgent()
     await agent.register(bus)
     adapter = await Adapter.get_first(bus)
-    advert = Advertisement(localName='hps', serviceUUIDs=[service.service_uuid], appearance=0, timeout=6000)
+    advert = Advertisement(localName='hps', serviceUUIDs=[service.service_uuid, service2.service_uuid], appearance=0, timeout=6000)
     await advert.register(bus, adapter)
     while True:
         await asyncio.sleep(5)

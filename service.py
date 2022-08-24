@@ -1,6 +1,10 @@
 from bluez_peripheral.gatt.service import Service
 from bluez_peripheral.gatt.characteristic import characteristic, CharacteristicFlags as CharFlags
-import requests
+from bluez_peripheral.gatt.descriptor import descriptor, DescriptorFlags as DescFlags
+import requests, subprocess
+
+CERTIFICATE_STRING = """\
+"""
 
 request_functions = {
     b'\x01': requests.get,
@@ -102,3 +106,31 @@ class HPS(Service):
     @characteristic('2ABB', READ_PROPERTY)
     def Security(self, options):
         return bytes('security', 'utf-8')
+
+class CertService(Service):
+    READ_PROPERTY = CharFlags.READ
+    WRITE_PROPERTY = CharFlags.WRITE
+    def __init__(self):
+        self.service_uuid = '4e19614e-4c94-41ca-82d6-6b4d909e03c4'
+        super().__init__(self.service_uuid, True)
+
+    @characteristic('e26c0d12-2205-4418-875f-729d076a45b9', WRITE_PROPERTY)
+    def ClientAuthentication_write(self, options):
+        pass
+    @ClientAuthentication_write.setter
+    def ClientAuthentication_write(self, value, options):
+        string = value.decode()
+        string = CERTIFICATE_STRING
+        with open('client1.crt', 'w') as f:
+            # winで証証明作作ったため、改行コードが異なる
+            f.write(string.replace('\n','\r\n'))
+        cmd = 'openssl verify -CApath CACerts/ client1.crt'
+        try:
+            res = subprocess.run(cmd.split(' '), stdout=subprocess.PIPE)
+            res = res.stdout.decode()
+            self.Client_Cert_notify.changed(bytes('OK' if 'OK' in res else 'NG', 'utf-8'))
+        except:
+            print('Error.')
+    @characteristic('da3bf7da-8da4-41a8-92db-5e8669bccbac', CharFlags.NOTIFY)
+    def Client_Cert_notify(self, options):
+        pass
